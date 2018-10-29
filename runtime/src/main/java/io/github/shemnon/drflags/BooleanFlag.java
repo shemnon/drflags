@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 public class BooleanFlag implements Flag<Boolean> {
   private boolean value;
 
-  public BooleanFlag(boolean value) {
+  BooleanFlag(boolean value) {
     this.value = value;
   }
 

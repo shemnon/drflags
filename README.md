@@ -4,6 +4,26 @@ A from-scratch open source implementation of GFlags for Java, mostly inspired by
 [Abseil Python flags](https://github.com/abseil/abseil-py/) and C++ 
 [GFlags](https://github.com/gflags/gflags).
 
+** Philosophy
+
+Command lines flags should be configured as close to their use in the code as
+possible.  That often means in the same class as their use or in the module
+the values are injected from.
+
+Developers should be subjected to a minimum of ceremony relating to the use of
+the flags.  Ideally it should consist of an annotation on the flags and an 
+annotation parser will collect the flags in a way retrievable from a single
+static method call in the main method.
+
+Flags are first class objects.  We won't be using any fancy reflection to
+dynamically inject the values into the flags, but the flag object will have the
+needed logic to parse a string and set it itself.
+
+Annotations are for user facing non-code configuration, such as flag names and 
+help text.  The "mechanical" aspects of the flag belong in the flag class 
+itself, such as whether the flag was set, if it is a repeated flag, and other 
+details.
+
 ** Aspirational Goal
 
 The goal is to create a library where users can declare their flags in any Java

@@ -6,7 +6,7 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class FlagID implements Comparable<FlagID> {
-  public static FlagID create(String className, String flagName) {
+  static FlagID create(String className, String flagName) {
     return new AutoValue_FlagID(className, flagName);
   }
 
@@ -14,7 +14,7 @@ public abstract class FlagID implements Comparable<FlagID> {
 
   public abstract String flagName();
 
-  public final String fqn() {
+  private String fqn() {
     return className() + '.' + flagName();
   }
 

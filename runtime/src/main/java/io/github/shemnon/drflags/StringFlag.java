@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 public class StringFlag implements Flag<String> {
   private String value;
 
-  public StringFlag(String value) {
+  StringFlag(String value) {
     this.value = value;
   }
 
