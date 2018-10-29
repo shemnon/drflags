@@ -7,18 +7,21 @@ import io.github.shemnon.drflags.Flags;
 public class Demo {
 
   @FlagDesc(description = "This is a simple String flag.", category="Types")
-  Flag<String> stringFlag = Flags.create("default");
+  static Flag<String> stringFlag = Flags.create("default");
 
   @FlagDesc(description = "This is a simple Boolean flag.", category="Types")
-  Flag<Boolean> booleanFlag = Flags.create(true);
+  static Flag<Boolean> booleanFlag = Flags.create(true);
 
   @FlagDesc
-  Flag<String> simple = Flags.create("");
+  static Flag<String> simple = Flags.create("");
 
   @FlagDesc(name = "pretty")
-  Flag<Boolean> ugly = Flags.create(true);
+  static Flag<Boolean> ugly = Flags.create(true);
 
   @FlagDesc(alternateNames = {"mountain-lion", "panther"})
-  Flag<String> cougar = Flags.create("Go Cougs!");
+  static Flag<String> cougar = Flags.create("Go Cougs!");
 
+  public static void main(String[] args) {
+    Flags.parseFlags(args);
+  }
 }

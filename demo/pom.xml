@@ -17,6 +17,12 @@
       <version>0.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.github.shemnon.drflags</groupId>
+      <artifactId>processor</artifactId>
+      <version>0.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 
