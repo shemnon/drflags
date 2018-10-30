@@ -1,10 +1,10 @@
-* DrFlags
+# DrFlags
 
 A from-scratch open source implementation of GFlags for Java, mostly inspired by 
 [Abseil Python flags](https://github.com/abseil/abseil-py/) and C++ 
 [GFlags](https://github.com/gflags/gflags).
 
-** Philosophy
+## Philosophy
 
 Command lines flags should be configured as close to their use in the code as
 possible.  That often means in the same class as their use or in the module
@@ -24,14 +24,14 @@ help text.  The "mechanical" aspects of the flag belong in the flag class
 itself, such as whether the flag was set, if it is a repeated flag, and other 
 details.
 
-** Aspirational Goal
+## Aspirational Goal
 
 The goal is to create a library where users can declare their flags in any Java
 file with annotations and the Annotation Processing Tool detects these and 
 gathers the available flags together so that a standard code statement can
 parse a command line flag and automatically provide the values of the flags.
 
-*** Roadmap
+### Roadmap
 
 This is how I see it evolving into my vision.  Some steps may be skipped.
 
@@ -47,7 +47,7 @@ This is how I see it evolving into my vision.  Some steps may be skipped.
 6. Use fancy Java 11 fields like nested classes to get access to non-public 
    fields without unsafe reflection access.
    
-** Usage
+## Usage
 
 Flags are higher level classes, allowing for more introspection about whether 
 the flag was set and if you have a default value.  This also allows the flag
