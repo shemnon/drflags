@@ -1,5 +1,7 @@
 package com.example.drflags;
 
+import java.util.List;
+
 import io.github.shemnon.drflags.Flag;
 import io.github.shemnon.drflags.FlagDesc;
 import io.github.shemnon.drflags.Flags;
@@ -21,7 +23,11 @@ public class Demo {
   static Flag<String> cougar = Flags.create("Go Cougs!");
 
   public static void main(String[] args) {
-    System.out.println(String.join(" ", Flags.parseFlags(args)));
+    // The magic happens here
+    List<String> unparsedArgs = Flags.parseFlags(args);
+
+    // The magic has now happened.  Flags are parsed.
+    System.out.println(String.join(" ", unparsedArgs));
     System.out.println("stringFlag - " + stringFlag.get());
     System.out.println("booleanFlag - " + booleanFlag.get());
     System.out.println("simple - " + simple.get());
