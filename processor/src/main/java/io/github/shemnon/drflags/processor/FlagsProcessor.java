@@ -81,7 +81,7 @@ public class FlagsProcessor extends AbstractProcessor {
           flagName = varElement.getSimpleName().toString();
         }
         getFlagDescriptorsBuilder.addStatement(
-            "flagDescriptors.add($T.create($S,$W$S,$W$S,$W$S,$W$S,$W$T$L,$W$S,$W$L));",
+            "flagDescriptors.add(\n$T.create(\n$S,\n$S,\n$S,\n$S,\n$S,\n$T.of($L),\n$S,\n$L))",
             FlagDescriptorImpl.class,
             varElement.getEnclosingElement().toString(),
             varElement.getSimpleName(),
@@ -89,7 +89,9 @@ public class FlagsProcessor extends AbstractProcessor {
             annotation.name(),
             annotation.description(),
             ImmutableList.class,
-            ".of()", // TODO alternate names later
+            annotation.alternateNames().length > 0
+              ? "\n    \"" + String.join("\",\n    \"", annotation.alternateNames()) + "\""
+              : "",
             annotation.category(),
             varElement.getEnclosingElement().getSimpleName() + "." + varElement.getSimpleName());
       }
