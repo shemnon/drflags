@@ -5,12 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.github.shemnon.drflags.Flag;
+import io.github.shemnon.drflags.FlagDescriptor;
 import io.github.shemnon.drflags.Flags;
 import org.junit.Test;
 
@@ -19,7 +18,17 @@ public class AbseilFlagValuesTest {
   @Test
   public void booleanFlags() {
     Flag<Boolean> boolFlag = Flags.create(true);
-    Map<String, Flag> testFlags = ImmutableMap.of("nothing", boolFlag);
+    List<FlagDescriptor> testFlags =
+        ImmutableList.of(
+            FlagDescriptorImpl.create(
+                AbseilFlagValuesTest.class.getName(),
+                "nothing",
+                "nothing",
+                "",
+                "description",
+                ImmutableList.of(),
+                "category",
+                boolFlag));
 
     assertThat(boolFlag.get()).isTrue();
     boolFlag.parse("false");
@@ -42,12 +51,21 @@ public class AbseilFlagValuesTest {
   }
 
   private static void knownFlagsTest(String[] args, List<String> definedFlags, String[] expected) {
-    Map<String, Flag> flags =
+    Iterable<FlagDescriptor> flags =
         definedFlags
             .stream()
-            .collect(
-                Collectors.toMap(
-                    s -> s, s -> s.startsWith("b") ? Flags.create(false) : Flags.create("")));
+            .map(
+                s ->
+                    FlagDescriptorImpl.create(
+                        AbseilFlagValuesTest.class.getName(),
+                        s,
+                        s,
+                        s,
+                        "test of " + s,
+                        ImmutableList.of(),
+                        "",
+                        s.startsWith("b") ? Flags.create(false) : Flags.create("")))
+            .collect(Collectors.toList());
     assertThat(AbseilStyleFlagsParser.parseFlags(flags, args)).containsExactly(expected);
   }
 

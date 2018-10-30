@@ -1,16 +1,17 @@
 package io.github.shemnon.drflags;
 
 import com.google.common.collect.ImmutableList;
+import io.github.shemnon.drflags.impl.AbseilStyleFlagsParser;
 
 public class Flags {
 
   public static ImmutableList<String> parseFlags(String... args) {
-    throw new RuntimeException("Not Implemented Yet");
+    return AbseilStyleFlagsParser.parseFlags(args);
   }
 
   public static ImmutableList<String> parseFlagsStrictly(String... args)
       throws UnknownFlagException {
-    throw new UnknownFlagException("", "Not Implemented Yet");
+    return AbseilStyleFlagsParser.parseFlagsStrictly(args);
   }
 
   public static Flag<Boolean> create(boolean value) {

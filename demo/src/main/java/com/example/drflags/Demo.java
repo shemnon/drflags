@@ -6,14 +6,13 @@ import io.github.shemnon.drflags.Flags;
 
 public class Demo {
 
-  @FlagDesc(description = "This is a simple String flag.", category="Types")
+  @FlagDesc(description = "This is a simple String flag.", category = "Types")
   static Flag<String> stringFlag = Flags.create("default");
 
-  @FlagDesc(description = "This is a simple Boolean flag.", category="Types")
+  @FlagDesc(description = "This is a simple Boolean flag.", category = "Types")
   static Flag<Boolean> booleanFlag = Flags.create(true);
 
-  @FlagDesc
-  static Flag<String> simple = Flags.create("");
+  @FlagDesc static Flag<String> simple = Flags.create("");
 
   @FlagDesc(name = "pretty")
   static Flag<Boolean> ugly = Flags.create(true);
@@ -22,6 +21,11 @@ public class Demo {
   static Flag<String> cougar = Flags.create("Go Cougs!");
 
   public static void main(String[] args) {
-    Flags.parseFlags(args);
+    System.out.println(String.join(" ", Flags.parseFlags(args)));
+    System.out.println("stringFlag - " + stringFlag.get());
+    System.out.println("booleanFlag - " + booleanFlag.get());
+    System.out.println("simple - " + simple.get());
+    System.out.println("ugly - " + ugly.get());
+    System.out.println("cougar - " + cougar.get());
   }
 }

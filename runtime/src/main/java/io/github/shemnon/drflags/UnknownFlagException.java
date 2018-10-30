@@ -1,6 +1,6 @@
 package io.github.shemnon.drflags;
 
-public class UnknownFlagException extends Exception {
+public class UnknownFlagException extends FlagParsingException {
 
   private final String flagName;
   private final String flagValue;

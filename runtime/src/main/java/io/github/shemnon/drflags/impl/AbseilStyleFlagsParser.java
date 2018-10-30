@@ -4,18 +4,26 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import io.github.shemnon.drflags.AmbiguousFlagException;
 import io.github.shemnon.drflags.BooleanFlag;
+import io.github.shemnon.drflags.Bunting;
 import io.github.shemnon.drflags.Flag;
+import io.github.shemnon.drflags.FlagDescriptor;
+import io.github.shemnon.drflags.FlagParsingException;
 import io.github.shemnon.drflags.UnknownFlagException;
 
 /**
@@ -26,14 +34,14 @@ public class AbseilStyleFlagsParser {
 
   private static final String UNDEFINED_OK_FLAG_NAME = "undefok";
 
-  public static ImmutableList<String> parseFlags(Map<String, Flag> flags, String... args) {
-    AbseilStyleFlagsParser parser = new AbseilStyleFlagsParser(flags);
+  public static ImmutableList<String> parseFlags(Iterable<FlagDescriptor> flags, String... args) {
+    AbseilStyleFlagsParser parser = new AbseilStyleFlagsParser(flags, true, true);
     parser.parseImpl(args);
     return parser.unparsedArgs;
   }
 
-  public static ImmutableList<String> parseFlagsStrictly(Map<String, Flag> flags, String... args)
-      throws UnknownFlagException {
+  public static ImmutableList<String> parseFlagsStrictly(
+      Iterable<FlagDescriptor> flags, String... args) throws FlagParsingException {
     AbseilStyleFlagsParser parser = new AbseilStyleFlagsParser(flags, true, false);
     parser.parseImpl(args);
     if (!parser.unknownFlags.isEmpty()) {
@@ -43,7 +51,46 @@ public class AbseilStyleFlagsParser {
     return parser.unparsedArgs;
   }
 
-  private Map<String, Flag> flags;
+  public static ImmutableList<String> parseFlags(String... args) {
+    AbseilStyleFlagsParser parser = new AbseilStyleFlagsParser(extractFlagsFromServices());
+    parser.parseImpl(args);
+    return parser.unparsedArgs;
+  }
+
+  public static ImmutableList<String> parseFlagsStrictly(String... args)
+      throws FlagParsingException {
+    AbseilStyleFlagsParser parser =
+        new AbseilStyleFlagsParser(extractFlagsFromServices(), true, false);
+    parser.parseImpl(args);
+    if (!parser.unknownFlags.isEmpty()) {
+      SimpleEntry<String, String> firstBadFlag = parser.unknownFlags.get(0);
+      throw new UnknownFlagException(firstBadFlag.getKey(), firstBadFlag.getValue());
+    }
+    return parser.unparsedArgs;
+  }
+
+  private static Multimap<String, FlagDescriptor> extractFlagsFromServices() {
+    Multimap<String, FlagDescriptor> flags = ArrayListMultimap.create();
+    ServiceLoader<Bunting> buntingLoader = ServiceLoader.load(Bunting.class);
+    for (Bunting b : buntingLoader) {
+      extractFlagsIntoMultimap(flags, b.getFlagDescriptors());
+    }
+    return flags;
+  }
+
+  private static Multimap<String, FlagDescriptor> extractFlagsIntoMultimap(
+      Multimap<String, FlagDescriptor> flags, Iterable<FlagDescriptor> descriptors) {
+    for (FlagDescriptor fd : descriptors) {
+      flags.put(fd.getFqn(), fd);
+      flags.put(fd.getFlagName(), fd);
+      for (String altFlag : fd.getAnnotationAlternateNames()) {
+        flags.put(altFlag, fd);
+      }
+    }
+    return flags;
+  }
+
+  private Multimap<String, FlagDescriptor> flags;
 
   /** GNU style arg parsing; only stop at -- not first unknown arg */
   private final boolean gnuStyle;
@@ -57,18 +104,20 @@ public class AbseilStyleFlagsParser {
   private ImmutableList<SimpleEntry<String, String>> unknownFlags;
   private ImmutableList<String> unparsedArgs;
 
-  private AbseilStyleFlagsParser(Map<String, Flag> flags) {
+  private AbseilStyleFlagsParser(Multimap<String, FlagDescriptor> flags) {
     this(flags, true, true);
   }
 
-  private AbseilStyleFlagsParser(Map<String, Flag> flags, boolean gnuStyle, boolean knownOnly) {
+  private AbseilStyleFlagsParser(
+      Iterable<FlagDescriptor> flags, boolean gnuStyle, boolean knownOnly) {
+    this(extractFlagsIntoMultimap(ArrayListMultimap.create(), flags), gnuStyle, knownOnly);
+  }
+
+  private AbseilStyleFlagsParser(
+      Multimap<String, FlagDescriptor> flags, boolean gnuStyle, boolean knownOnly) {
     this.flags = flags;
     this.gnuStyle = gnuStyle;
     this.knownOnly = knownOnly;
-  }
-
-  public void addKnownFlag(String flagName, Flag<?> flag) {
-    flags.put(flagName, flag);
   }
 
   private void parseImpl(String... args) {
@@ -141,7 +190,7 @@ public class AbseilStyleFlagsParser {
         continue;
       }
 
-      Flag flag = flags.get(name);
+      Flag flag = getFlagForName(name);
 
       // Boolean special cases.  --flag is parsed as --flag=true and --noflag as --flag=fakse
       if (flag instanceof BooleanFlag) {
@@ -152,7 +201,7 @@ public class AbseilStyleFlagsParser {
         }
         continue;
       } else if (flag == null && name.startsWith("no")) {
-        Flag noFlag = flags.get(name.substring(2));
+        Flag noFlag = getFlagForName(name.substring(2));
         if (noFlag instanceof BooleanFlag) {
           checkState(value == null, name + "does not take an argument");
           noFlag.parse("false");
@@ -196,5 +245,21 @@ public class AbseilStyleFlagsParser {
     }
     unparsedArgs = unparsedArgsBuilder.build();
     unknownFlags = unknownFlagsBuilder.build();
+  }
+
+  private Flag getFlagForName(String flagName) {
+    Collection<FlagDescriptor> flagCandidates = flags.get(flagName);
+    if (flagCandidates.size() > 1) {
+      throw new AmbiguousFlagException(
+          flagCandidates.stream().map(FlagDescriptor::getFqn).collect(Collectors.toList()),
+          flagName);
+    } else {
+      FlagDescriptor fd = Iterables.getFirst(flagCandidates, null);
+      if (fd != null) {
+        return fd.getFlag();
+      } else {
+        return null;
+      }
+    }
   }
 }
