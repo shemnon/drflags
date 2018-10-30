@@ -115,7 +115,6 @@ public class FlagsProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(ERROR, e.toString(), parentElement);
       }
     }
-    processingEnv.getMessager().printMessage(WARNING, "Generating Bunting");
   }
 
   private boolean validateElement(VariableElement e) {
