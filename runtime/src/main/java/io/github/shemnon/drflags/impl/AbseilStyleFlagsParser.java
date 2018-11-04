@@ -22,7 +22,6 @@ import io.github.shemnon.drflags.AmbiguousFlagException;
 import io.github.shemnon.drflags.BooleanFlag;
 import io.github.shemnon.drflags.Bunting;
 import io.github.shemnon.drflags.Flag;
-import io.github.shemnon.drflags.FlagDescriptor;
 import io.github.shemnon.drflags.FlagParsingException;
 import io.github.shemnon.drflags.UnknownFlagException;
 

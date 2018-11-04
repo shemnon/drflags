@@ -1,7 +1,6 @@
 package io.github.shemnon.drflags.processor;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.WARNING;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,8 +31,7 @@ import com.squareup.javapoet.TypeSpec;
 import io.github.shemnon.drflags.Bunting;
 import io.github.shemnon.drflags.Flag;
 import io.github.shemnon.drflags.FlagDesc;
-import io.github.shemnon.drflags.FlagDescriptor;
-import io.github.shemnon.drflags.impl.FlagDescriptorImpl;
+import io.github.shemnon.drflags.impl.FlagDescriptor;
 
 @SupportedAnnotationTypes("io.github.shemnon.drflags.FlagDesc")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -82,7 +80,7 @@ public class FlagsProcessor extends AbstractProcessor {
         }
         getFlagDescriptorsBuilder.addStatement(
             "flagDescriptors.add(\n$T.create(\n$S,\n$S,\n$S,\n$S,\n$S,\n$T.of($L),\n$S,\n$L))",
-            FlagDescriptorImpl.class,
+            FlagDescriptor.class,
             varElement.getEnclosingElement().toString(),
             varElement.getSimpleName(),
             flagName,

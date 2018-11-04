@@ -2,6 +2,8 @@ package com.example.drflags;
 
 import java.util.List;
 
+import com.example.drflags.demo.lib.AnotherLibraryFunction;
+import com.example.drflags.demo.lib.LibraryFunction;
 import io.github.shemnon.drflags.Flag;
 import io.github.shemnon.drflags.FlagDesc;
 import io.github.shemnon.drflags.Flags;
@@ -33,5 +35,9 @@ public class Demo {
     System.out.println("simple - " + simple.get());
     System.out.println("ugly - " + ugly.get());
     System.out.println("cougar - " + cougar.get());
+
+    System.out.println(LibraryFunction.staticToString());
+    System.out.println(AnotherLibraryFunction.staticToString());
+
   }
 }

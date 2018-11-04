@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import io.github.shemnon.drflags.Flag;
-import io.github.shemnon.drflags.FlagDescriptor;
 import io.github.shemnon.drflags.Flags;
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class AbseilFlagValuesTest {
     Flag<Boolean> boolFlag = Flags.create(true);
     List<FlagDescriptor> testFlags =
         ImmutableList.of(
-            FlagDescriptorImpl.create(
+            FlagDescriptor.create(
                 AbseilFlagValuesTest.class.getName(),
                 "nothing",
                 "nothing",
@@ -56,7 +55,7 @@ public class AbseilFlagValuesTest {
             .stream()
             .map(
                 s ->
-                    FlagDescriptorImpl.create(
+                    FlagDescriptor.create(
                         AbseilFlagValuesTest.class.getName(),
                         s,
                         s,

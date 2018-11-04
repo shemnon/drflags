@@ -13,6 +13,7 @@
     <module>demo</module>
     <module>processor</module>
     <module>runtime</module>
+    <module>demo-lib</module>
   </modules>
 
   <licenses>
